@@ -1,19 +1,26 @@
 import { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import useAsync from '../hooks/useAsync';
+import useLocalStorage from '../hooks/useLocalStorage';
 import { getChapter } from '../services/comicService';
-import ChapterNav from '../components/reader/ChapterNav';
+import ChapterSelect from '../components/reader/ChapterSelect';
+import ModeToggle from '../components/reader/ModeToggle';
+import ScrollReader from '../components/reader/ScrollReader';
+import PagedReader from '../components/reader/PagedReader';
 import Loading from '../components/ui/Loading';
 import NotFoundPage from './NotFoundPage';
 import styles from './ReaderPage.module.css';
 
 /**
- * The reader: pages stacked vertically (webtoon style),
- * with chapter navigation above and below.
+ * The reader. Two modes, remembered between visits:
+ *   - "scroll": all pages stacked vertically (webtoon style)
+ *   - "paged":  one page at a time, swipe right / buttons for next page
+ * Chapter switching happens via the dropdown in the top bar.
  */
 export default function ReaderPage() {
   const { chapterId } = useParams();
   const { data, loading } = useAsync(() => getChapter(chapterId), [chapterId]);
+  const [mode, setMode] = useLocalStorage('reader-mode', 'scroll');
 
   // Jump back to the top whenever the chapter changes.
   useEffect(() => {
@@ -23,7 +30,7 @@ export default function ReaderPage() {
   if (loading) return <Loading />;
   if (!data) return <NotFoundPage />;
 
-  const { comic, chapter, prevChapter, nextChapter } = data;
+  const { comic, chapter, prevChapter, nextChapter, allChapters } = data;
 
   return (
     <div className={styles.reader}>
@@ -31,26 +38,20 @@ export default function ReaderPage() {
         <Link to="/" className={styles.backLink}>
           ← {comic.title}
         </Link>
-        <span className={styles.chapterTitle}>
-          Chapter {chapter.number}: {chapter.title}
-        </span>
+        <ChapterSelect chapters={allChapters} currentId={chapter.id} />
+        <ModeToggle mode={mode} onChange={setMode} />
       </header>
 
-      <ChapterNav prevChapter={prevChapter} nextChapter={nextChapter} />
-
-      <div className={styles.pages}>
-        {chapter.pages.map((src, i) => (
-          <img
-            key={src}
-            src={src}
-            alt={`Page ${i + 1}`}
-            loading="lazy"
-            className={styles.page}
-          />
-        ))}
-      </div>
-
-      <ChapterNav prevChapter={prevChapter} nextChapter={nextChapter} />
+      {mode === 'paged' ? (
+        <PagedReader
+          pages={chapter.pages}
+          chapterId={chapter.id}
+          prevChapter={prevChapter}
+          nextChapter={nextChapter}
+        />
+      ) : (
+        <ScrollReader pages={chapter.pages} nextChapter={nextChapter} />
+      )}
     </div>
   );
 }

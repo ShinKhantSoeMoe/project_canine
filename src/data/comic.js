@@ -8,7 +8,7 @@ import cover from '../assets/cover.jpg';
  * from the folders in src/chapters/ (see src/data/chapters.js).
  */
 export default {
-  title: 'Working Title',
+  title: 'Wonder After Stars',
   author: 'Peculiar Canine',
   description:
     'something something something something something something something something something something something something something something something something',

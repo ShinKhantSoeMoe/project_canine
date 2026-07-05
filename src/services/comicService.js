@@ -29,5 +29,6 @@ export async function getChapter(chapterId) {
     chapter: chapters[index],
     prevChapter: chapters[index - 1] ?? null,
     nextChapter: chapters[index + 1] ?? null,
+    allChapters: chapters,
   };
 }

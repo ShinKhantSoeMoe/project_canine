@@ -30,12 +30,3 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-.pages {
-  max-width: var(--max-reader-width);
-  margin: 0 auto;
-}
-
-.page {
-  width: 100%;
-}
