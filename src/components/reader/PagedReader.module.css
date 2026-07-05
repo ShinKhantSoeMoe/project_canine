@@ -7,6 +7,7 @@
   justify-content: center;
   cursor: pointer;
   user-select: none;
+  overflow: hidden; /* pages slide in/out without causing scrollbars */
   /* Let vertical scrolling still work; we handle horizontal swipes. */
   touch-action: pan-y;
 }
@@ -15,6 +16,38 @@
   width: 100%;
   max-height: calc(100vh - 160px);
   object-fit: contain;
+  /* Keep the 0.22s in sync with TURN_DURATION in PagedReader.jsx */
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+/* Old page sliding out */
+.outLeft {
+  transform: translateX(-60%);
+  opacity: 0;
+}
+
+.outRight {
+  transform: translateX(60%);
+  opacity: 0;
+}
+
+/* New page's starting position (placed instantly, then slides to center) */
+.fromRight {
+  transform: translateX(60%);
+  opacity: 0;
+  transition: none;
+}
+
+.fromLeft {
+  transform: translateX(-60%);
+  opacity: 0;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page {
+    transition: none;
+  }
 }
 
 .nav {

@@ -4,22 +4,28 @@ import styles from './PagedReader.module.css';
 
 /** Minimum horizontal swipe distance (px) to count as a page turn. */
 const SWIPE_THRESHOLD = 50;
+/** Page-turn animation length (ms) — keep in sync with the CSS transition. */
+const TURN_DURATION = 220;
 
 /**
  * Page mode: one page at a time.
  *
- * Navigation (all page-by-page):
+ * Navigation (all page-by-page, all animated):
  *   - Prev / Next buttons under the page
- *   - swipe RIGHT → next page   (swipe left → previous)
+ *   - swipe RIGHT → next page   (swipe left → previous);
+ *     the page follows your finger while dragging
  *   - tap/click right half of the page → next, left half → previous
  *   - arrow keys → next / previous
  *
  * Past the last page it moves on to the next chapter (if any).
- * To flip the swipe direction, swap `next()` and `prev()` in onTouchEnd.
  */
 export default function PagedReader({ pages, chapterId, prevChapter, nextChapter }) {
   const [index, setIndex] = useState(0);
-  const touchStartX = useRef(null);
+  const [drag, setDrag] = useState(0); // live finger offset while dragging (px)
+  const [leaving, setLeaving] = useState(null); // 'left' | 'right' — old page slides out
+  const [entering, setEntering] = useState(null); // 'left' | 'right' — new page slides in
+  const touchStart = useRef(null);
+  const busy = useRef(false); // ignore input mid-animation
   const navigate = useNavigate();
 
   const onLastPage = index === pages.length - 1;
@@ -30,15 +36,43 @@ export default function PagedReader({ pages, chapterId, prevChapter, nextChapter
     setIndex(0);
   }, [chapterId]);
 
-  const next = () => {
-    if (!onLastPage) setIndex(index + 1);
-    else if (nextChapter) navigate(`/chapter/${nextChapter.id}`);
+  /**
+   * Animated page turn. dir: 1 = next, -1 = previous.
+   * Old page slides out one way; new page slides in from the other.
+   */
+  const turnPage = (dir) => {
+    if (busy.current) return;
+
+    // At the edges of the chapter, move between chapters instead.
+    if (dir === 1 && onLastPage) {
+      if (nextChapter) navigate(`/chapter/${nextChapter.id}`);
+      return;
+    }
+    if (dir === -1 && onFirstPage) {
+      if (prevChapter) navigate(`/chapter/${prevChapter.id}`);
+      return;
+    }
+
+    busy.current = true;
+    setLeaving(dir === 1 ? 'right' : 'left');
+
+    setTimeout(() => {
+      setIndex((i) => i + dir);
+      setLeaving(null);
+      // Place the new page just off-screen (no transition)...
+      setEntering(dir === 1 ? 'left' : 'right');
+      // ...wait one paint, then let it slide to the center.
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          setEntering(null);
+          busy.current = false;
+        })
+      );
+    }, TURN_DURATION);
   };
 
-  const prev = () => {
-    if (!onFirstPage) setIndex(index - 1);
-    else if (prevChapter) navigate(`/chapter/${prevChapter.id}`);
-  };
+  const next = () => turnPage(1);
+  const prev = () => turnPage(-1);
 
   // Keyboard navigation.
   useEffect(() => {
@@ -50,17 +84,26 @@ export default function PagedReader({ pages, chapterId, prevChapter, nextChapter
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  // Touch (swipe) navigation.
+  // Touch: page follows the finger, then turns or snaps back on release.
   const onTouchStart = (e) => {
-    touchStartX.current = e.touches[0].clientX;
+    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
   };
 
-  const onTouchEnd = (e) => {
-    if (touchStartX.current === null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    touchStartX.current = null;
+  const onTouchMove = (e) => {
+    if (!touchStart.current || busy.current) return;
+    const dx = e.touches[0].clientX - touchStart.current.x;
+    const dy = e.touches[0].clientY - touchStart.current.y;
+    // Only drag on mostly-horizontal movement; leave vertical scrolling alone.
+    if (Math.abs(dx) > Math.abs(dy)) setDrag(dx);
+  };
+
+  const onTouchEnd = () => {
+    if (touchStart.current === null) return;
+    const dx = drag;
+    touchStart.current = null;
+    setDrag(0); // if we don't turn, CSS animates the snap-back
     if (dx > SWIPE_THRESHOLD) next(); // swipe right → next page
-    if (dx < -SWIPE_THRESHOLD) prev(); // swipe left → previous page
+    if (dx < -SWIPE_THRESHOLD) next(); // swipe left → previous page
   };
 
   // Tap/click zones: left half = prev, right half = next.
@@ -70,19 +113,35 @@ export default function PagedReader({ pages, chapterId, prevChapter, nextChapter
     isRightHalf ? next() : prev();
   };
 
+  const pageClass = [
+    styles.page,
+    leaving === 'left' && styles.outLeft,
+    leaving === 'right' && styles.outRight,
+    entering === 'right' && styles.fromRight,
+    entering === 'left' && styles.fromLeft,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
     <div>
       <div
         className={styles.stage}
         onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
         onClick={onClick}
       >
         <img
           src={pages[index]}
           alt={`Page ${index + 1}`}
-          className={styles.page}
+          className={pageClass}
           draggable={false}
+          style={
+            drag !== 0
+              ? { transform: `translateX(${drag}px)`, transition: 'none' }
+              : undefined
+          }
         />
       </div>
 
