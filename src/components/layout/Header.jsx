@@ -6,7 +6,7 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.inner}>
         <Link to="/" className={styles.logo}>
-          🐾 Canine
+          Wonder After Stars
         </Link>
         <nav className={styles.nav}>
           <Link to="/">Chapters</Link>
