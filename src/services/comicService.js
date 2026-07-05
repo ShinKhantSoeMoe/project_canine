@@ -2,39 +2,32 @@
  * ---------------------------------------------------------------
  * DATA ACCESS LAYER
  * ---------------------------------------------------------------
- * Every component gets data through these functions — never by
- * importing src/data/comics.js directly. That way, when you outgrow
- * static data and add a backend (REST API, CMS, database), you only
- * rewrite this file. Everything is async for the same reason.
+ * Components get all data through these functions — never by
+ * importing the data files directly. If you ever move to a
+ * backend/CMS, only this file changes. Everything is async for
+ * the same reason.
  */
 
-import comics from '../data/comics';
+import comicInfo from '../data/comic';
+import chapters from '../data/chapters';
 
-/** All comics, for the library/home page. */
-export async function getComics() {
-  return comics;
-}
-
-/** One comic by id, or null. */
-export async function getComic(comicId) {
-  return comics.find((c) => c.id === comicId) ?? null;
+/** The comic with its full chapter list. */
+export async function getComic() {
+  return { ...comicInfo, chapters };
 }
 
 /**
- * A chapter plus its reading context:
- * the parent comic and the previous/next chapters (null at the ends).
+ * One chapter plus its reading context:
+ * previous/next chapters (null at the ends).
  */
-export async function getChapter(comicId, chapterId) {
-  const comic = await getComic(comicId);
-  if (!comic) return null;
-
-  const index = comic.chapters.findIndex((ch) => ch.id === chapterId);
+export async function getChapter(chapterId) {
+  const index = chapters.findIndex((ch) => ch.id === chapterId);
   if (index === -1) return null;
 
   return {
-    comic,
-    chapter: comic.chapters[index],
-    prevChapter: comic.chapters[index - 1] ?? null,
-    nextChapter: comic.chapters[index + 1] ?? null,
+    comic: comicInfo,
+    chapter: chapters[index],
+    prevChapter: chapters[index - 1] ?? null,
+    nextChapter: chapters[index + 1] ?? null,
   };
 }

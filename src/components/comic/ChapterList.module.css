@@ -22,7 +22,7 @@
   border-color: var(--color-accent);
 }
 
-.date {
+.meta {
   font-size: 0.8rem;
   color: var(--color-text-muted);
   white-space: nowrap;

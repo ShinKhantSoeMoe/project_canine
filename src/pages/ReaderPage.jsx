@@ -12,11 +12,8 @@ import styles from './ReaderPage.module.css';
  * with chapter navigation above and below.
  */
 export default function ReaderPage() {
-  const { comicId, chapterId } = useParams();
-  const { data, loading } = useAsync(
-    () => getChapter(comicId, chapterId),
-    [comicId, chapterId]
-  );
+  const { chapterId } = useParams();
+  const { data, loading } = useAsync(() => getChapter(chapterId), [chapterId]);
 
   // Jump back to the top whenever the chapter changes.
   useEffect(() => {
@@ -31,7 +28,7 @@ export default function ReaderPage() {
   return (
     <div className={styles.reader}>
       <header className={styles.topBar}>
-        <Link to={`/comic/${comic.id}`} className={styles.backLink}>
+        <Link to="/" className={styles.backLink}>
           ← {comic.title}
         </Link>
         <span className={styles.chapterTitle}>
@@ -39,7 +36,7 @@ export default function ReaderPage() {
         </span>
       </header>
 
-      <ChapterNav comicId={comic.id} prevChapter={prevChapter} nextChapter={nextChapter} />
+      <ChapterNav prevChapter={prevChapter} nextChapter={nextChapter} />
 
       <div className={styles.pages}>
         {chapter.pages.map((src, i) => (
@@ -53,7 +50,7 @@ export default function ReaderPage() {
         ))}
       </div>
 
-      <ChapterNav comicId={comic.id} prevChapter={prevChapter} nextChapter={nextChapter} />
+      <ChapterNav prevChapter={prevChapter} nextChapter={nextChapter} />
     </div>
   );
 }

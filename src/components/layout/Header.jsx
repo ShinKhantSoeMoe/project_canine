@@ -9,7 +9,7 @@ export default function Header() {
           🐾 Canine
         </Link>
         <nav className={styles.nav}>
-          <Link to="/">Library</Link>
+          <Link to="/">Chapters</Link>
           {/* Add more links here as the site grows (About, Updates, ...) */}
         </nav>
       </div>
