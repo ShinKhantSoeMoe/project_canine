@@ -1,0 +1,12 @@
+.wrapper {
+  text-align: center;
+  padding: 4rem 0;
+}
+
+.link {
+  color: var(--color-accent);
+}
+
+.link:hover {
+  text-decoration: underline;
+}

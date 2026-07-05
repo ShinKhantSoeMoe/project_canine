@@ -1,0 +1,61 @@
+/* ---------------------------------------------------------------
+   Global styles + design tokens.
+   Change the CSS variables here to re-theme the whole site.
+   Component-specific styles live next to each component (*.module.css).
+   --------------------------------------------------------------- */
+
+:root {
+  /* Colors */
+  --color-bg: #0f1115;
+  --color-surface: #1a1d24;
+  --color-surface-hover: #232732;
+  --color-border: #2c3140;
+  --color-text: #e8eaf0;
+  --color-text-muted: #9aa1b2;
+  --color-accent: #ff6b3d;
+  --color-accent-hover: #ff8560;
+
+  /* Layout */
+  --max-content-width: 1100px;
+  --max-reader-width: 800px;
+
+  /* Typography */
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Misc */
+  --radius: 10px;
+  --transition: 0.15s ease;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}

@@ -1,0 +1,57 @@
+.hero {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.cover {
+  width: 220px;
+  flex-shrink: 0;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+}
+
+.author {
+  color: var(--color-text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.tags {
+  color: var(--color-accent);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.description {
+  color: var(--color-text-muted);
+  margin-bottom: 1.5rem;
+  max-width: 60ch;
+}
+
+.readButton {
+  display: inline-block;
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.6rem 1.5rem;
+  border-radius: var(--radius);
+  transition: background var(--transition);
+}
+
+.readButton:hover {
+  background: var(--color-accent-hover);
+}
+
+.chaptersHeading {
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 600px) {
+  .hero {
+    flex-direction: column;
+  }
+
+  .cover {
+    width: 160px;
+  }
+}
