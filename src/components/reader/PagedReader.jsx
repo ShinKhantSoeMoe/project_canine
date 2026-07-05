@@ -54,13 +54,13 @@ export default function PagedReader({ pages, chapterId, prevChapter, nextChapter
     }
 
     busy.current = true;
-    setLeaving(dir === 1 ? 'right' : 'left');
+    setLeaving(dir === 1 ? 'left' : 'right');
 
     setTimeout(() => {
       setIndex((i) => i + dir);
       setLeaving(null);
       // Place the new page just off-screen (no transition)...
-      setEntering(dir === 1 ? 'left' : 'right');
+      setEntering(dir === 1 ? 'right' : 'left');
       // ...wait one paint, then let it slide to the center.
       requestAnimationFrame(() =>
         requestAnimationFrame(() => {
