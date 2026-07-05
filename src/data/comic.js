@@ -1,4 +1,4 @@
-import cover from '../assets/cover.svg';
+import cover from '../assets/cover.jpg';
 
 /**
  * ---------------------------------------------------------------
@@ -8,12 +8,11 @@ import cover from '../assets/cover.svg';
  * from the folders in src/chapters/ (see src/data/chapters.js).
  */
 export default {
-  title: 'Canine',
-  author: 'Kelvin',
+  title: 'Working Title',
+  author: 'Peculiar Canine',
   description:
-    'A stray dog with a mysterious past navigates a sprawling neon city, ' +
-    'searching for the family he lost — and uncovering something much bigger.',
+    'something something something something something something something something something something something something something something something something',
   cover,
   status: 'Ongoing', // e.g. Ongoing | Completed | Hiatus
-  tags: ['Action', 'Adventure'],
+  tags: ['Something'],
 };
