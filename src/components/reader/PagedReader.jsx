@@ -102,8 +102,8 @@ export default function PagedReader({ pages, chapterId, prevChapter, nextChapter
     const dx = drag;
     touchStart.current = null;
     setDrag(0); // if we don't turn, CSS animates the snap-back
-    if (dx > SWIPE_THRESHOLD) next(); // swipe right → next page
-    if (dx < -SWIPE_THRESHOLD) prev(); // swipe left → previous page
+    if (dx > SWIPE_THRESHOLD) prev(); // swipe right → next page
+    if (dx < -SWIPE_THRESHOLD) next(); // swipe left → previous page
   };
 
   // Tap/click zones: left half = prev, right half = next.
